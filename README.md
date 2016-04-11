@@ -31,7 +31,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     }
 
     cred := linebotapi.Credential{
-        ChannelId: "****",
+        ChannelId: ****,
         ChannelSecret: "****",
         ChannelMid: "****",
     }

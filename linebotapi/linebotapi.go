@@ -4,6 +4,7 @@ import (
     "io"
     "bytes"
     "errors"
+    "strconv"
     "net/http"
     "encoding/json"
 )
@@ -22,7 +23,7 @@ const (
 )
 
 type Credential struct {
-    ChannelId string
+    ChannelId int
     ChannelSecret string
     ChannelMid string
 }
@@ -75,7 +76,7 @@ func SendMessage(client http.Client, cred Credential, to []string, content Messa
     }
     req, err := http.NewRequest("POST", "https://trialbot-api.line.me/v1/events", bytes.NewBuffer(b))
     req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-    req.Header.Set("X-Line-ChannelID", cred.ChannelId)
+    req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
     req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
     req.Header.Set("X-Line-Trusted-User-With-ACL", cred.ChannelMid)
 
