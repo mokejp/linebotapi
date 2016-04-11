@@ -35,35 +35,43 @@ type Credential struct {
 }
 
 type Result struct {
-  Result []Message `json:"result,omitempty"`
+    Result []Message `json:"result,omitempty"`
 }
 
 type Message struct {
+    Id string `json:"id,omitempty"`
     From string `json:"from,omitempty"`
     FromChannel int `json:"fromChannel,omitempty"`
     To []string `json:"to,omitempty"`
     ToChannel int `json:"toChannel,omitempty"`
     EventType string `json:"eventType,omitempty"`
-    Id string `json:"id,omitempty"`
     Content *MessageContent `json:"content,omitempty"`
 }
 type MessageContent struct {
-    // User Message
-    Location *MessageContentLocation `json:"location,omitempty"`
     Id string `json:"id,omitempty"`
-    ContentType uint8 `json:"contentType,omitempty"`
     From string `json:"from,omitempty"`
     CreatedTime int `json:"createdTime,omitempty"`
     To []string `json:"to,omitempty"`
     ToType int `json:"toType,omitempty"`
+
+    // User message
+    Location *MessageContentLocation `json:"location,omitempty"`
+    ContentType uint8 `json:"contentType,omitempty"`
     ContentMetadata map[string]string `json:"contentMetadata,omitempty"`
     Text string `json:"text,omitempty"`
-    MessageNotified int `json:"messageNotified,omitempty"`
-    Messages *[]MessageContent `json:"messages,omitempty"`
-    // Operation
+
+    // User operation
     OpType int `json:"opType,omitempty"`
     Revision int `json:"revision,omitempty"`
     Params *[]string `json:"params,omitempty"`
+
+    // For sending messages
+    MessageNotified int `json:"messageNotified,omitempty"`
+    Messages *[]MessageContent `json:"messages,omitempty"`
+
+    // For sending image / video / audio
+    OriginalContentUrl string `json:"originalContentUrl,omitempty"`
+    PreviewImageUrl string `json:"previewImageUrl,omitempty"`
 }
 type MessageContentLocation struct {
     Title string `json:"title,omitempty"`
