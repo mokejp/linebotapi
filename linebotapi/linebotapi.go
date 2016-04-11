@@ -5,6 +5,7 @@ import (
     "bytes"
     "errors"
     "strconv"
+    "strings"
     "net/http"
     "encoding/json"
 )
@@ -60,6 +61,20 @@ type MessageContentLocation struct {
     Longitude float64 `json:"longitude,omitempty"`
 }
 
+type Contacts struct {
+    Contacts []Contact `json:"contact,omitempty`
+    Count int `json:"count,omitempty`
+    Total int `json:"total,omitempty`
+    Start int `json:"start,omitempty`
+    Display int `json:"display,omitempty`
+}
+type Contact struct {
+    DisplayName string `json:"displayName,omitempty`
+    Mid string `json:"mid,omitempty`
+    PictureUrl string `json:"pictureUrl,omitempty`
+    StatusMessage string `json:"statusMessage,omitempty`
+}
+
 type ErrorResponse struct {
     StatusCode string `json:"statusCode,omitempty"`
     StatusMessage string `json:"statusMessage,omitempty"`
@@ -112,6 +127,34 @@ func SendMessages(client http.Client, cred Credential, to []string, contents []M
             Messages: &contents,
         },
     })
+}
+
+func GetUserProfiles(client http.Client, cred Credential, mids []string) (Contacts, error) {
+    req, err := http.NewRequest("GET", "https://trialbot-api.line.me/v1/profiles?mids=" + strings.Join(mids[:], ","), nil)
+    req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
+    req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
+    req.Header.Set("X-Line-Trusted-User-With-ACL", cred.Mid)
+
+    res, err := client.Do(req)
+    if err != nil {
+        return Contacts{}, err
+    }
+    decoder := json.NewDecoder(res.Body)
+    if res.StatusCode != http.StatusOK {
+        var e ErrorResponse;
+        err := decoder.Decode(&e)
+        if err != nil {
+            return Contacts{}, err
+        }
+        return Contacts{}, errors.New(e.StatusMessage)
+    }
+    var contacts Contacts;
+    err = decoder.Decode(&contacts)
+    if err != nil {
+        return Contacts{}, err
+    }
+    defer res.Body.Close()
+    return contacts, nil
 }
 
 func ParseRequest(body io.Reader) (Result, error) {
