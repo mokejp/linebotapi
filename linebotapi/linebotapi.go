@@ -63,11 +63,11 @@ type MessageContent struct {
     // User operation
     OpType int `json:"opType,omitempty"`
     Revision int `json:"revision,omitempty"`
-    Params *[]string `json:"params,omitempty"`
+    Params []string `json:"params,omitempty"`
 
     // For sending messages
     MessageNotified int `json:"messageNotified,omitempty"`
-    Messages *[]MessageContent `json:"messages,omitempty"`
+    Messages []MessageContent `json:"messages,omitempty"`
 
     // For sending image / video / audio
     OriginalContentUrl string `json:"originalContentUrl,omitempty"`
@@ -142,7 +142,7 @@ func SendMessages(client http.Client, cred Credential, to []string, contents []M
         EventType: "140177271400161403",
         Content: &MessageContent{
             MessageNotified: notified,
-            Messages: &contents,
+            Messages: contents,
         },
     })
 }
