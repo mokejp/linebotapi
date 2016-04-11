@@ -23,6 +23,11 @@ const (
     ToTypeUser = 1
 )
 
+const (
+    OpTypeAdded   = 4
+    OpTypeBlocked = 8
+)
+
 type Credential struct {
     ChannelId int
     ChannelSecret string
@@ -43,6 +48,7 @@ type Message struct {
     Content *MessageContent `json:"content,omitempty"`
 }
 type MessageContent struct {
+    // User Message
     Location *MessageContentLocation `json:"location,omitempty"`
     Id string `json:"id,omitempty"`
     ContentType uint8 `json:"contentType,omitempty"`
@@ -54,6 +60,10 @@ type MessageContent struct {
     Text string `json:"text,omitempty"`
     MessageNotified int `json:"messageNotified,omitempty"`
     Messages *[]MessageContent `json:"messages,omitempty"`
+    // Operation
+    OpType int `json:"opType,omitempty"`
+    Revision int `json:"revision,omitempty"`
+    Params *[]string `json:"params,omitempty"`
 }
 type MessageContentLocation struct {
     Title string `json:"title,omitempty"`
