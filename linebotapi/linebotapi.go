@@ -25,7 +25,7 @@ const (
 type Credential struct {
     ChannelId int
     ChannelSecret string
-    ChannelMid string
+    Mid string
 }
 
 type Result struct {
@@ -51,6 +51,8 @@ type MessageContent struct {
     ToType int `json:"toType,omitempty"`
     ContentMetadata map[string]string `json:"contentMetadata,omitempty"`
     Text string `json:"text,omitempty"`
+    MessageNotified int `json:"messageNotified,omitempty"`
+    Messages *[]MessageContent `json:"messages,omitempty"`
 }
 type MessageContentLocation struct {
     Title string `json:"title,omitempty"`
@@ -63,13 +65,7 @@ type ErrorResponse struct {
     StatusMessage string `json:"statusMessage,omitempty"`
 }
 
-func SendMessage(client http.Client, cred Credential, to []string, content MessageContent) error {
-    m := Message{
-        To: to,
-        ToChannel: 1383378250,
-        EventType: "138311608800106203",
-        Content: &content,
-    }
+func postEvent(client http.Client, cred Credential,  to []string, m Message) error {
     b, err := json.Marshal(m)
     if err != nil {
         return err
@@ -78,7 +74,7 @@ func SendMessage(client http.Client, cred Credential, to []string, content Messa
     req.Header.Set("Content-Type", "application/json; charset=UTF-8")
     req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
     req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
-    req.Header.Set("X-Line-Trusted-User-With-ACL", cred.ChannelMid)
+    req.Header.Set("X-Line-Trusted-User-With-ACL", cred.Mid)
 
     res, err := client.Do(req)
     if err != nil {
@@ -95,6 +91,27 @@ func SendMessage(client http.Client, cred Credential, to []string, content Messa
     }
     defer res.Body.Close()
     return nil
+}
+
+func SendMessage(client http.Client, cred Credential, to []string, content MessageContent) error {
+    return postEvent(client, cred, to, Message{
+        To: to,
+        ToChannel: 1383378250,
+        EventType: "138311608800106203",
+        Content: &content,
+    })
+}
+
+func SendMessages(client http.Client, cred Credential, to []string, contents []MessageContent, notified int) error {
+    return postEvent(client, cred, to, Message{
+        To: to,
+        ToChannel: 1383378250,
+        EventType: "140177271400161403",
+        Content: &MessageContent{
+            MessageNotified: notified,
+            Messages: &contents,
+        },
+    })
 }
 
 func ParseRequest(body io.Reader) (Result, error) {

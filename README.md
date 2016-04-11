@@ -31,37 +31,38 @@ func handler(w http.ResponseWriter, r *http.Request) {
     }
 
     cred := linebotapi.Credential{
-        ChannelId: ****,
-        ChannelSecret: "****",
-        ChannelMid: "****",
+        ChannelId: ****,        // Your Channel ID
+        ChannelSecret: "****",  // Your Channel Secret
+        Mid: "****",            // Your MID
     }
 
-    m := result.Result[0]
-    if m.Content.ContentType == linebotapi.ContentTypeText {
-        // Text
-        mc := linebotapi.MessageContent{
-            ContentType: linebotapi.ContentTypeText,
-            ToType: linebotapi.ToTypeUser,
-            Text: m.Content.Text,
+    var messages = make([]linebotapi.MessageContent, len(result.Result))
+    for i, m := range result.Result {
+        if m.Content.ContentType == linebotapi.ContentTypeText {
+            // Text
+            messages[i] = linebotapi.MessageContent{
+                ContentType: linebotapi.ContentTypeText,
+                ToType: linebotapi.ToTypeUser,
+                Text: m.Content.Text,
+            }
         }
-        err = linebotapi.SendMessage(client, cred, []string{m.Content.From}, mc)
-    }
-    if m.Content.ContentType == linebotapi.ContentTypeSticker {
-        // Sticker(preinstall sticker only?)
-        mc := linebotapi.MessageContent{
-            ContentType: linebotapi.ContentTypeSticker,
-            ToType: linebotapi.ToTypeUser,
-            ContentMetadata: map[string]string{
-                "STKID": m.Content.ContentMetadata["STKID"],
-                "STKPKGID": m.Content.ContentMetadata["STKPKGID"],
-            },
+        if m.Content.ContentType == linebotapi.ContentTypeSticker {
+            // Sticker(preinstall sticker only?)
+            messages[i] = linebotapi.MessageContent{
+                ContentType: linebotapi.ContentTypeSticker,
+                ToType: linebotapi.ToTypeUser,
+                ContentMetadata: map[string]string{
+                    "STKID": m.Content.ContentMetadata["STKID"],
+                    "STKPKGID": m.Content.ContentMetadata["STKPKGID"],
+                },
+            }
         }
-        err = linebotapi.SendMessage(client, cred, []string{m.Content.From}, mc)
-    }
-    
-    if err != nil {
-        panic(err)
+        err = linebotapi.SendMessages(client, cred, []string{m.Content.From}, messages, 0)
+        if err != nil {
+            panic(err)
+        }
     }
 }
+
 
 ```
