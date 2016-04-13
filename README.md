@@ -5,7 +5,7 @@
 package linebotapi_gae
 
 import (
-    "linebotapi"
+    "github.com/mokejp/linebotapi_go"
 
     "fmt"
     "io/ioutil"
