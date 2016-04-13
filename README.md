@@ -21,6 +21,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
 
     // Parse request body
+    dump, err := httputil.DumpRequest(r, true)
+    log.Debugf(c, string(dump))
     result, err := linebotapi.ParseRequest(r)
     if err != nil {
         panic(err)
@@ -31,7 +33,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     log.Debugf(c, string(b))
 
     // initialize http client
-    client := http.Client{
+    client := &http.Client{
         Transport: &urlfetch.Transport{
             Context: c,
         },
@@ -44,7 +46,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
         Mid: "****",            // Your MID
     }
 
-    // Process receive messages
+    // Process received messages
     var messages = make(map[string][]linebotapi.MessageContent)
     for _, m := range result.Result {
         _, exists := messages[m.Content.From]
@@ -90,15 +92,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
         } else if m.Content.ContentType == linebotapi.ContentTypeImage {
             // Image
             // Get content data.
-            r, err := linebotapi.GetMessageContentData(client, cred, *m.Content)
+            data, err := linebotapi.GetMessageContentData(client, cred, *m.Content)
             if err != nil {
                 panic(err)
             }
             // io.Reader to byte[]
-            buf, err := ioutil.ReadAll(r)
+            buf, err := ioutil.ReadAll(data.Reader)
             if err != nil {
                 panic(err)
             }
+            messages[m.Content.From] = append(messages[m.Content.From], linebotapi.MessageContent{
+                ContentType: linebotapi.ContentTypeText,
+                ToType: linebotapi.ToTypeUser,
+                Text: fmt.Sprintf("Type: %s Length: %d", data.ContentType, len(buf)),
+            });
         }
     }
     for k := range messages {
@@ -117,5 +124,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
         }
     }
 }
+
 
 ```

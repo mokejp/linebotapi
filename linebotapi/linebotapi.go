@@ -73,6 +73,10 @@ type MessageContent struct {
     OriginalContentUrl string `json:"originalContentUrl,omitempty"`
     PreviewImageUrl string `json:"previewImageUrl,omitempty"`
 }
+type MessageContentData struct {
+    Reader io.Reader
+    ContentType string
+}
 type MessageContentLocation struct {
     Title string `json:"title,omitempty"`
     Latitude float64 `json:"latitude,omitempty"`
@@ -98,7 +102,7 @@ type ErrorResponse struct {
     StatusMessage string `json:"statusMessage,omitempty"`
 }
 
-func postEvent(client http.Client, cred Credential,  to []string, m Message) error {
+func postEvent(client *http.Client, cred Credential,  to []string, m Message) error {
     b, err := json.Marshal(m)
     if err != nil {
         return err
@@ -126,7 +130,7 @@ func postEvent(client http.Client, cred Credential,  to []string, m Message) err
     return nil
 }
 
-func SendMessage(client http.Client, cred Credential, to []string, content MessageContent) error {
+func SendMessage(client *http.Client, cred Credential, to []string, content MessageContent) error {
     return postEvent(client, cred, to, Message{
         To: to,
         ToChannel: 1383378250,
@@ -135,7 +139,7 @@ func SendMessage(client http.Client, cred Credential, to []string, content Messa
     })
 }
 
-func SendMessages(client http.Client, cred Credential, to []string, contents []MessageContent, notified int) error {
+func SendMessages(client *http.Client, cred Credential, to []string, contents []MessageContent, notified int) error {
     return postEvent(client, cred, to, Message{
         To: to,
         ToChannel: 1383378250,
@@ -147,7 +151,7 @@ func SendMessages(client http.Client, cred Credential, to []string, contents []M
     })
 }
 
-func GetMessageContentData(client http.Client, cred Credential, m MessageContent) (io.Reader, error) {
+func GetMessageContentData(client *http.Client, cred Credential, m MessageContent) (MessageContentData, error) {
     req, err := http.NewRequest("GET", "https://trialbot-api.line.me/v1/bot/message/" + m.Id + "/content", nil)
     req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
     req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
@@ -155,21 +159,24 @@ func GetMessageContentData(client http.Client, cred Credential, m MessageContent
 
     res, err := client.Do(req)
     if err != nil {
-        return nil, err
+        return MessageContentData{}, err
     }
     if res.StatusCode != http.StatusOK {
         var e ErrorResponse;
         decoder := json.NewDecoder(res.Body)
         err := decoder.Decode(&e)
         if err != nil {
-            return nil, err
+            return MessageContentData{}, err
         }
-        return nil, errors.New(e.StatusMessage)
+        return MessageContentData{}, errors.New(e.StatusMessage)
     }
-    return res.Body, nil
+    return MessageContentData{
+        Reader: res.Body,
+        ContentType: res.Header.Get("Content-Type"),
+    }, nil
 }
 
-func GetUserProfiles(client http.Client, cred Credential, mids []string) (Contacts, error) {
+func GetUserProfiles(client *http.Client, cred Credential, mids []string) (Contacts, error) {
     req, err := http.NewRequest("GET", "https://trialbot-api.line.me/v1/profiles?mids=" + strings.Join(mids[:], ","), nil)
     req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
     req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
