@@ -87,6 +87,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
                     "STKPKGID": m.Content.ContentMetadata["STKPKGID"],
                 },
             });
+        } else if m.Content.ContentType == linebotapi.ContentTypeImage {
+            // Image
+            // Get content data.
+            r, err := linebotapi.GetMessageContentData(client, cred, *m.Content)
+            if err != nil {
+                panic(err)
+            }
+            // io.Reader to byte[]
+            buf, err := ioutil.ReadAll(r)
+            if err != nil {
+                panic(err)
+            }
         }
     }
     for k := range messages {

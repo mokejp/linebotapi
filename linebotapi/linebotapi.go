@@ -147,6 +147,28 @@ func SendMessages(client http.Client, cred Credential, to []string, contents []M
     })
 }
 
+func GetMessageContentData(client http.Client, cred Credential, m MessageContent) (io.Reader, error) {
+    req, err := http.NewRequest("GET", "https://trialbot-api.line.me/v1/bot/message/" + m.Id + "/content", nil)
+    req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
+    req.Header.Set("X-Line-ChannelSecret", cred.ChannelSecret)
+    req.Header.Set("X-Line-Trusted-User-With-ACL", cred.Mid)
+
+    res, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    if res.StatusCode != http.StatusOK {
+        var e ErrorResponse;
+        decoder := json.NewDecoder(res.Body)
+        err := decoder.Decode(&e)
+        if err != nil {
+            return nil, err
+        }
+        return nil, errors.New(e.StatusMessage)
+    }
+    return res.Body, nil
+}
+
 func GetUserProfiles(client http.Client, cred Credential, mids []string) (Contacts, error) {
     req, err := http.NewRequest("GET", "https://trialbot-api.line.me/v1/profiles?mids=" + strings.Join(mids[:], ","), nil)
     req.Header.Set("X-Line-ChannelID", strconv.Itoa(cred.ChannelId))
@@ -175,7 +197,7 @@ func GetUserProfiles(client http.Client, cred Credential, mids []string) (Contac
     return contacts, nil
 }
 
-func ParseRequest(r http.Request) (Result, error) {
+func ParseRequest(r *http.Request) (Result, error) {
     decoder := json.NewDecoder(r.Body)
     var result Result;
     err := decoder.Decode(&result)
