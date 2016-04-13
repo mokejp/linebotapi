@@ -175,8 +175,8 @@ func GetUserProfiles(client http.Client, cred Credential, mids []string) (Contac
     return contacts, nil
 }
 
-func ParseRequest(body io.Reader) (Result, error) {
-    decoder := json.NewDecoder(body)
+func ParseRequest(r http.Request) (Result, error) {
+    decoder := json.NewDecoder(r.Body)
     var result Result;
     err := decoder.Decode(&result)
     if err != nil {

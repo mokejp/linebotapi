@@ -21,7 +21,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
 
     // Parse request body
-    result, err := linebotapi.ParseRequest(r.Body)
+    result, err := linebotapi.ParseRequest(r)
     if err != nil {
         panic(err)
     }
