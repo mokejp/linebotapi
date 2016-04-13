@@ -2,12 +2,9 @@ package linebotapi
 
 import (
     "testing"
-    "fmt"
     "bytes"
-    "net/url"
     "net/http"
     "net/http/httptest"
-    "net/http/httputil"
 )
 
 
@@ -27,4 +24,3 @@ func Test_ParseRequest_Success(t *testing.T) {
         return
     }
 }
-
