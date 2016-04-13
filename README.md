@@ -7,9 +7,14 @@ package linebotapi_gae
 import (
     "linebotapi"
 
+    "fmt"
+    "io/ioutil"
     "net/http"
+    "encoding/json"
+    "net/http/httputil"
 
     "google.golang.org/appengine"
+    "google.golang.org/appengine/log"
     "google.golang.org/appengine/urlfetch"
 )
 
