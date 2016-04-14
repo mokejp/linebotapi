@@ -75,7 +75,7 @@ if err != nil {
     panic(err)
 }
 // Send messages
-err = client.SendMessage([]string{"target mid"}, 
+err = client.SendMessages([]string{"target mid"}, 
     []linebotapi.MessageContent{linebotapi.NewMessageText("Hello!"), linebotapi.NewMessageText("Goodbye!")}, 0)
 
 ```
