@@ -1,4 +1,82 @@
 # linebotapi for golang
+## Usage
+### Import package
+
+``` go
+import (
+    "github.com/mokejp/linebotapi"
+
+    ...
+)
+```
+
+### Receiving messages / operations
+
+``` go
+// LINE Bot credential
+cred := linebotapi.Credential{
+    ChannelId: 1234,        // Your Channel ID
+    ChannelSecret: "****",  // Your Channel Secret
+    Mid: "****",            // Your MID
+}
+
+// Parse request from Bot API Server
+events, err := linebotapi.ParseRequest(req, cred)
+if err != nil {
+    panic(err)
+}
+for _, event := range events {
+    // Get event content
+    content := event.GetEventContent()
+    if content.IsOperation { // operation event
+        if content.OpType == linebotapi.OpTypeAdded {
+            // Added user event
+        } else if content.OpType == linebotapi.OpTypeBlocked {
+            // Blocked user event
+        }
+    } else if content.IsMessage {  // message event
+        if content.ContentType == linebotapi.ContentTypeText {
+            // text message
+            msg, err := content.GetMessageText()    // Get text
+            if err != nil {
+                panic(err)
+            }
+            fmt.Printf(msg.Text)
+        }
+    }
+}
+
+```
+
+### Sending message
+
+``` go
+// LINE Bot credential
+cred := linebotapi.Credential{
+    ChannelId: 1234,        // Your Channel ID
+    ChannelSecret: "****",  // Your Channel Secret
+    Mid: "****",            // Your MID
+}
+
+// initialize bot API client
+client := linebotapi.NewClient(cred)
+/*
+// For GAE
+client.HttpClient = &http.Client{
+    Transport: &urlfetch.Transport{
+        Context: c,
+    },
+}
+*/
+
+// Send
+err = client.SendMessages([]string{"target mid"}, linebotapi.NewMessageText("Hello!"))
+if err != nil {
+    panic(err)
+}
+
+```
+
 ## example server
 ### echo server on GAE
 
