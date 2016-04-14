@@ -65,12 +65,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
             }
         } else {
             if content.ContentType == linebotapi.ContentTypeText {
+                // Text Message
                 msg, err := content.GetMessageText()
                 if err != nil {
                     panic(err)
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageText(msg.Text));
             } else if (content.ContentType == linebotapi.ContentTypeImage) {
+                // Image Message
                 _, err := content.GetMessageImage()
                 if err != nil {
                     panic(err)
@@ -86,6 +88,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageText(fmt.Sprintf("Type: %s Length: %d", data.ContentType, len(buf))));
             } else if (content.ContentType == linebotapi.ContentTypeVideo) {
+                // Video Message
                 _, err := content.GetMessageVideo()
                 if err != nil {
                     panic(err)
@@ -101,6 +104,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageText(fmt.Sprintf("Type: %s Length: %d", data.ContentType, len(buf))));
             } else if (content.ContentType == linebotapi.ContentTypeAudio) {
+                // Audio Message
                 _, err := content.GetMessageAudio()
                 if err != nil {
                     panic(err)
@@ -116,18 +120,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageText(fmt.Sprintf("Type: %s Length: %d", data.ContentType, len(buf))));
             } else if (content.ContentType == linebotapi.ContentTypeLocation) {
+                // Location Message
                 msg, err := content.GetMessageLocation()
                 if err != nil {
                     panic(err)
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageLocation(msg.Text, msg.Title, msg.Latitude, msg.Longitude));
             } else if (content.ContentType == linebotapi.ContentTypeSticker) {
+                // Sticker Message
                 msg, err := content.GetMessageSticker()
                 if err != nil {
                     panic(err)
                 }
                 messages[content.From] = append(messages[content.From], linebotapi.NewMessageSticker(msg.StickerPackageId, msg.StickerId, ""));
             } else if (content.ContentType == linebotapi.ContentTypeContact) {
+                // Contact Message
                 msg, err := content.GetMessageContact()
                 if err != nil {
                     panic(err)
