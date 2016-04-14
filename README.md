@@ -69,8 +69,8 @@ client.HttpClient = &http.Client{
 }
 */
 
-// Send
-err = client.SendMessages([]string{"target mid"}, linebotapi.NewMessageText("Hello!"))
+// Sending a message
+err = client.SendMessage([]string{"target mid"}, linebotapi.NewMessageText("Hello!"))
 if err != nil {
     panic(err)
 }
