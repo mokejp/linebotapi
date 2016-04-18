@@ -162,6 +162,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 if err != nil {
                     panic(err)
                 }
+                defer data.Reader.Close()
                 // io.Reader to byte[]
                 buf, err := ioutil.ReadAll(data.Reader)
                 if err != nil {
@@ -178,6 +179,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 if err != nil {
                     panic(err)
                 }
+                defer data.Reader.Close()
                 // io.Reader to byte[]
                 buf, err := ioutil.ReadAll(data.Reader)
                 if err != nil {
@@ -194,6 +196,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
                 if err != nil {
                     panic(err)
                 }
+                defer data.Reader.Close()
                 // io.Reader to byte[]
                 buf, err := ioutil.ReadAll(data.Reader)
                 if err != nil {

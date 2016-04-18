@@ -339,13 +339,13 @@ func NewMessageContact(mid, name string) MessageContent {
 */
 
 type MessageContentData struct {
-    Reader io.Reader
+    Reader io.ReadCloser
     ContentType string
 }
 
 
 type Contacts struct {
-    Contacts []Contact `json:"contact"`
+    Contacts []Contact `json:"contacts"`
     Count int `json:"count"`
     Total int `json:"total"`
     Start int `json:"start"`
@@ -463,7 +463,6 @@ func (c *Client) GetMessageContent(m *EventContent) (*MessageContentData, error)
     if err != nil {
         return nil, err
     }
-    defer resp.Body.Close()
     if resp.StatusCode != http.StatusOK {
         return nil, c.handleError(resp)
     }
@@ -522,7 +521,7 @@ func ParseRequest(r *http.Request, cred Credential) ([]Event, error) {
     // Get request signature
     sign := r.Header.Get("X-LINE-ChannelSignature")
     if sign == "" {
-        return nil, errors.New("Not found HTTP header : 'X-LINE-ChannelSignature'.")
+        return nil, errors.New("Not found HTTP header: 'X-LINE-ChannelSignature'.")
     }
     expectedMAC, err := base64.StdEncoding.DecodeString(sign)
     if err != nil {
