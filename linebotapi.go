@@ -361,8 +361,8 @@ type Contact struct {
 
 
 type ErrorResponse struct {
-    StatusCode string `json:"statusCode,omitempty"`
-    StatusMessage string `json:"statusMessage,omitempty"`
+    StatusCode string `json:"statusCode"`
+    StatusMessage string `json:"statusMessage"`
 }
 
 
