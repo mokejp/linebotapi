@@ -5,6 +5,7 @@ import (
 
     "fmt"
     "bytes"
+    "io/ioutil"
     "net/http"
     "net/http/httptest"
     "crypto/hmac"
@@ -79,6 +80,7 @@ func Test_SendMessage_Success(t *testing.T) {
         }
         if event.RawContent["text"] != "message" {
             t.Error("'message'")
+            t.Errorf("excepted: 'message', actual: '%s'", event.RawContent["text"])
             return
         }
     }))
@@ -116,5 +118,70 @@ func Test_SendMessage_Failure(t *testing.T) {
     if err == nil {
         t.Error("err is nil")
         return
+    }
+}
+
+func Test_GetUserProfiles_Success(t *testing.T) {
+    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        q := r.URL.Query()
+        if q["mids"][0] != "u0047556f2e40dba2456887320ba7c76d" {
+            t.Errorf("excepted: 'u0047556f2e40dba2456887320ba7c76d', actual: '%s'", q["mids"][0])
+        }
+        w.Header().Set("Content-type", "application/json")
+        w.WriteHeader(200)
+        fmt.Fprintf(w, `{"contacts":[{"displayName":"BOT API","mid":"u0047556f2e40dba2456887320ba7c76d","pictureUrl":"http://dl.profile.line.naver.jp/abcdefghijklmn","statusMessage":"Hello, LINE!"}]}`)
+    }))
+    defer server.Close()
+
+    cred := Credential{
+        ChannelId: 1234567890,
+        ChannelSecret: "abcdefg",
+        Mid: "abcdefg",
+    }
+    client := NewClient(cred)
+    client.BaseURL = server.URL
+    contacts, err := client.GetUserProfiles([]string{"u0047556f2e40dba2456887320ba7c76d"})
+    if err != nil {
+        t.Error(err)
+        return
+    }
+    if contacts.Contacts[0].DisplayName != "BOT API" {
+        t.Errorf("excepted: 'BOT API', actual: '%s'", contacts.Contacts[0].DisplayName)
+        return
+    }
+}
+
+func Test_GetMessageContent_Success(t *testing.T) {
+    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-type", "application/json")
+        w.WriteHeader(200)
+        fmt.Fprintf(w, `{}`)
+    }))
+    defer server.Close()
+
+    cred := Credential{
+        ChannelId: 1234567890,
+        ChannelSecret: "abcdefg",
+        Mid: "abcdefg",
+    }
+    client := NewClient(cred)
+    client.BaseURL = server.URL
+
+    data, err := client.GetMessageContent(&EventContent{})
+    if err != nil {
+        t.Error(err)
+        return
+    }
+    defer data.Reader.Close()
+    buf, err := ioutil.ReadAll(data.Reader)
+    if err != nil {
+        t.Error(err)
+        return
+    }
+    if len(buf) != 2 {
+        t.Errorf("excepted: 2, actual: %d", len(buf))
+    }
+    if data.ContentType != "application/json" {
+        t.Errorf("excepted: 'application/json', actual: '%s'", data.ContentType)
     }
 }
