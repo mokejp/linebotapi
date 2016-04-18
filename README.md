@@ -1,4 +1,7 @@
 # linebotapi for golang
+
+[![Build Status](https://drone.io/github.com/mokejp/linebotapi/status.png)](https://drone.io/github.com/mokejp/linebotapi/latest)
+
 ## Usage
 ### Import package
 
