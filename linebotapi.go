@@ -345,18 +345,18 @@ type MessageContentData struct {
 
 
 type Contacts struct {
-    Contacts []Contact `json:"contact,omitempty`
-    Count int `json:"count,omitempty`
-    Total int `json:"total,omitempty`
-    Start int `json:"start,omitempty`
-    Display int `json:"display,omitempty`
+    Contacts []Contact `json:"contact"`
+    Count int `json:"count"`
+    Total int `json:"total"`
+    Start int `json:"start"`
+    Display int `json:"display"`
 }
 
 type Contact struct {
-    DisplayName string `json:"displayName,omitempty`
-    Mid string `json:"mid,omitempty`
-    PictureUrl string `json:"pictureUrl,omitempty`
-    StatusMessage string `json:"statusMessage,omitempty`
+    DisplayName string `json:"displayName"`
+    Mid string `json:"mid"`
+    PictureUrl string `json:"pictureUrl"`
+    StatusMessage string `json:"statusMessage"`
 }
 
 
