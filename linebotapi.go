@@ -416,10 +416,10 @@ func (c *Client) postEvents(to []string, event Event) error {
     if err != nil {
         return err
     }
+    defer resp.Body.Close()
     if resp.StatusCode != http.StatusOK {
         return c.handleError(resp)
     }
-    defer resp.Body.Close()
     return nil
 }
 
@@ -463,10 +463,10 @@ func (c *Client) GetMessageContent(m *EventContent) (*MessageContentData, error)
     if err != nil {
         return nil, err
     }
+    defer resp.Body.Close()
     if resp.StatusCode != http.StatusOK {
         return nil, c.handleError(resp)
     }
-    defer resp.Body.Close()
     return &MessageContentData{
         Reader: resp.Body,
         ContentType: resp.Header.Get("Content-Type"),
@@ -489,6 +489,7 @@ func (c *Client) GetUserProfiles(mids []string) (*Contacts, error) {
     if err != nil {
         return nil, err
     }
+    defer resp.Body.Close()
     if resp.StatusCode != http.StatusOK {
         return nil, c.handleError(resp)
     }
@@ -498,7 +499,6 @@ func (c *Client) GetUserProfiles(mids []string) (*Contacts, error) {
     if err != nil {
         return nil, err
     }
-    defer resp.Body.Close()
     return &contacts, nil
 }
 
