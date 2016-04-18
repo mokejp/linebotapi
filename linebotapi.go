@@ -9,7 +9,10 @@ import (
     "strings"
     "net/url"
     "net/http"
+    "crypto/hmac"
+    "crypto/sha256"
     "encoding/json"
+    "encoding/base64"
 )
 
 const (
@@ -512,10 +515,32 @@ type callbackRequest struct {
 }
 
 func ParseRequest(r *http.Request, cred Credential) ([]Event, error) {
-    // TODO: validate signature
-    decoder := json.NewDecoder(r.Body)
+    // Get request body
+    buf := new(bytes.Buffer)
+    buf.ReadFrom(r.Body)
+
+    // Get request signature
+    sign := r.Header.Get("X-LINE-ChannelSignature")
+    if sign == "" {
+        return nil, errors.New("Not found HTTP header : 'X-LINE-ChannelSignature'.")
+    }
+    expectedMAC, err := base64.StdEncoding.DecodeString(sign)
+    if err != nil {
+        return nil, err
+    }
+
+    // Validate body
+    mac := hmac.New(sha256.New, []byte(cred.ChannelSecret))
+    mac.Write(buf.Bytes())
+    messageMAC := mac.Sum(nil)
+    if !hmac.Equal(messageMAC, expectedMAC) {
+        return nil, errors.New("Invalid signature.")
+    }
+
+    // Decode json
+    decoder := json.NewDecoder(buf)
     var result callbackRequest;
-    err := decoder.Decode(&result)
+    err = decoder.Decode(&result)
     if err != nil {
         return nil, err
     }
