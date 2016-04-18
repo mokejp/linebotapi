@@ -478,8 +478,8 @@ func (c *Client) GetUserProfiles(mids []string) (*Contacts, error) {
     if err != nil {
         return nil, err
     }
-    url.Path = fmt.Sprintf("/v1/profiles")
-    url.RawQuery = fmt.Sprintf("mids=%s", strings.Join(mids[:], ","))
+    url.Path = "/v1/profiles"
+    url.RawQuery = fmt.Sprintf("mids=%s", strings.Join(mids, ","))
     req, err := c.newRequest("GET", url.String(), nil)
     if err != nil {
         return nil, err
