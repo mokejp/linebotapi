@@ -270,16 +270,16 @@ func (c *MessageContact) Map() map[string]interface{} {
     }
 }
 
-func NewMessageText(text string) MessageContent {
-    return MessageContent{
+func NewMessageText(text string) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeText,
         Content: &MessageText{
             Text: text,
         },
     }
 }
-func NewMessageImage(contentURL, previewURL string) MessageContent {
-    return MessageContent{
+func NewMessageImage(contentURL, previewURL string) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeImage,
         Content: &MessageImage{
             OriginalContentUrl: contentURL,
@@ -287,8 +287,8 @@ func NewMessageImage(contentURL, previewURL string) MessageContent {
         },
     }
 }
-func NewMessageVideo(contentURL, previewURL string) MessageContent {
-    return MessageContent{
+func NewMessageVideo(contentURL, previewURL string) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeVideo,
         Content: &MessageVideo{
             OriginalContentUrl: contentURL,
@@ -296,8 +296,8 @@ func NewMessageVideo(contentURL, previewURL string) MessageContent {
         },
     }
 }
-func NewMessageAudio(contentURL string, length int) MessageContent {
-    return MessageContent{
+func NewMessageAudio(contentURL string, length int) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeAudio,
         Content: &MessageAudio{
             OriginalContentUrl: contentURL,
@@ -305,8 +305,8 @@ func NewMessageAudio(contentURL string, length int) MessageContent {
         },
     }
 }
-func NewMessageLocation(text, title string, lat, long float64) MessageContent {
-    return MessageContent{
+func NewMessageLocation(text, title string, lat, long float64) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeLocation,
         Content: &MessageLocation{
             Text: text,
@@ -316,8 +316,8 @@ func NewMessageLocation(text, title string, lat, long float64) MessageContent {
         },
     }
 }
-func NewMessageSticker(packageId, id, ver string) MessageContent {
-    return MessageContent{
+func NewMessageSticker(packageId, id, ver string) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeSticker,
         Content: &MessageSticker{
             StickerPackageId: packageId,
@@ -327,8 +327,8 @@ func NewMessageSticker(packageId, id, ver string) MessageContent {
     }
 }
 /*
-func NewMessageContact(mid, name string) MessageContent {
-    return MessageContent{
+func NewMessageContact(mid, name string) *MessageContent {
+    return &MessageContent{
         ContentType: ContentTypeContact,
         Content: &MessageContact{
             Mid: mid,
@@ -369,7 +369,7 @@ type ErrorResponse struct {
 type Client struct {
     BaseURL string
     HttpClient *http.Client
-    Credential Credential
+    Credential *Credential
 }
 func (c *Client) newRequest(method, url string, body io.Reader) (*http.Request, error) {
     req, err := http.NewRequest(method, url, body)
@@ -423,7 +423,7 @@ func (c *Client) postEvents(to []string, event Event) error {
     return nil
 }
 
-func (c *Client) SendMessage(to []string, content MessageContent) error {
+func (c *Client) SendMessage(to []string, content *MessageContent) error {
     return c.postEvents(to, Event{
         To: to,
         ToChannel: 1383378250,
@@ -432,7 +432,7 @@ func (c *Client) SendMessage(to []string, content MessageContent) error {
     })
 }
 
-func (c *Client) SendMessages(to []string, contents []MessageContent, notified int) error {
+func (c *Client) SendMessages(to []string, contents []*MessageContent, notified int) error {
     messages := make([]map[string]interface{}, len(contents))
     for i, c := range contents {
         messages[i] = c.Content.Map()
@@ -501,7 +501,7 @@ func (c *Client) GetUserProfiles(mids []string) (*Contacts, error) {
     return &contacts, nil
 }
 
-func NewClient(cred Credential) *Client {
+func NewClient(cred *Credential) *Client {
     return &Client{
         BaseURL: "https://trialbot-api.line.me",
         HttpClient: &http.Client{},
@@ -513,7 +513,7 @@ type callbackRequest struct {
     Result []Event
 }
 
-func ParseRequest(r *http.Request, cred Credential) ([]Event, error) {
+func ParseRequest(r *http.Request, cred *Credential) ([]Event, error) {
     // Get request body
     buf := new(bytes.Buffer)
     buf.ReadFrom(r.Body)

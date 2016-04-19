@@ -17,7 +17,7 @@ import (
 
 ``` go
 // LINE Bot credential
-cred := linebotapi.Credential{
+cred := &linebotapi.Credential{
     ChannelId: 1234,        // Your Channel ID
     ChannelSecret: "****",  // Your Channel Secret
     Mid: "****",            // Your MID
@@ -55,7 +55,7 @@ for _, event := range events {
 
 ``` go
 // LINE Bot credential
-cred := linebotapi.Credential{
+cred := &linebotapi.Credential{
     ChannelId: 1234,        // Your Channel ID
     ChannelSecret: "****",  // Your Channel Secret
     Mid: "****",            // Your MID
@@ -110,7 +110,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     c := appengine.NewContext(r)
 
     // LINE Bot credential
-    cred := linebotapi.Credential{
+    cred := &linebotapi.Credential{
         ChannelId: ****,        // Your Channel ID
         ChannelSecret: "****",  // Your Channel Secret
         Mid: "****",            // Your MID
@@ -134,12 +134,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Process received messages
-    var messages = make(map[string][]linebotapi.MessageContent)
+    var messages = make(map[string][]*linebotapi.MessageContent)
     for _, event := range result {
         content := event.GetEventContent()
         _, exists := messages[content.From]
         if !exists {
-            messages[content.From] = make([]linebotapi.MessageContent, 0)
+            messages[content.From] = make([]*linebotapi.MessageContent, 0)
         }
         if content.IsOperation {
             // Operation Event

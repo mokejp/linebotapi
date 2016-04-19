@@ -16,7 +16,7 @@ import (
 
 
 func Test_ParseRequest_Success(t *testing.T) {
-    cred := Credential{
+    cred := &Credential{
         ChannelId: 1234567890,
         ChannelSecret: "0123456789abcdef0000000000000000",
         Mid: "0123456789abcdef0000000000000000",
@@ -86,7 +86,7 @@ func Test_SendMessage_Success(t *testing.T) {
     }))
     defer server.Close()
 
-    cred := Credential{
+    cred := &Credential{
         ChannelId: 1234567890,
         ChannelSecret: "abcdefg",
         Mid: "abcdefg",
@@ -107,7 +107,7 @@ func Test_SendMessage_Failure(t *testing.T) {
     }))
     defer server.Close()
 
-    cred := Credential{
+    cred := &Credential{
         ChannelId: 1234567890,
         ChannelSecret: "abcdefg",
         Mid: "abcdefg",
@@ -133,7 +133,7 @@ func Test_GetUserProfiles_Success(t *testing.T) {
     }))
     defer server.Close()
 
-    cred := Credential{
+    cred := &Credential{
         ChannelId: 1234567890,
         ChannelSecret: "abcdefg",
         Mid: "abcdefg",
@@ -159,7 +159,7 @@ func Test_GetMessageContent_Success(t *testing.T) {
     }))
     defer server.Close()
 
-    cred := Credential{
+    cred := &Credential{
         ChannelId: 1234567890,
         ChannelSecret: "abcdefg",
         Mid: "abcdefg",
