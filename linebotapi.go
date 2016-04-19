@@ -432,6 +432,30 @@ func (c *Client) SendMessage(to []string, content *MessageContent) error {
     })
 }
 
+func (c *Client) SendText(to []string, text string) error {
+    return c.SendMessage(to, NewMessageText(text))
+}
+
+func (c *Client) SendImage(to []string, contentURL, previewURL string) error {
+    return c.SendMessage(to, NewMessageImage(contentURL, previewURL))
+}
+
+func (c *Client) SendVideo(to []string, contentURL, previewURL string) error {
+    return c.SendMessage(to, NewMessageVideo(contentURL, previewURL))
+}
+
+func (c *Client) SendAudio(to []string, contentURL string, length int) error {
+    return c.SendMessage(to, NewMessageAudio(contentURL, length))
+}
+
+func (c *Client) SendLocation(to []string, text, title string, lat, long float64) error {
+    return c.SendMessage(to, NewMessageLocation(text, title, lat, long))
+}
+
+func (c *Client) SendSticker(to []string, packageId, id, ver string) error {
+    return c.SendMessage(to, NewMessageSticker(packageId, id, ver))
+}
+
 func (c *Client) SendMessages(to []string, contents []*MessageContent, notified int) error {
     messages := make([]map[string]interface{}, len(contents))
     for i, c := range contents {
